@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anime Recommender</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@1.16.2/dist/full.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
 </head>
 <body>
     <header class="bg-gray-900 text-white py-4">
@@ -27,8 +32,8 @@
                 <h1 class="text-4xl font-bold mb-4">Discover Your Next Favorite Anime</h1>
                 <p class="text-xl mb-8">Get personalized anime recommendations based on your preferences.</p>
                 <form id="recommendationForm" class="flex justify-center">
-                    <input type="text" id="animeInput" class="bg-white rounded-l-full px-6 py-3 text-gray-800 font-bold" placeholder="Enter an anime title" required>
-                    <button type="submit" class="bg-pink-500 hover:bg-pink-600 rounded-r-full px-6 py-3 text-white font-bold">Get Recommendations</button>
+                    <input type="text" id="animeInput" class="bg-white rounded-full px-6 py-3 text-gray-800 font-bold" placeholder="Enter an anime title" required>
+                    <button type="submit" class="bg-pink-500 hover:bg-pink-600 rounded-full px-6 py-3 text-white font-bold">Get Recommendations</button>
                 </form>
             </div>
         </section>
@@ -103,12 +108,12 @@
         recommendationsList.innerHTML = "";
 
         const searchedAnimeItem = document.createElement("div");
-        searchedAnimeItem.classList.add("group", "relative", "bg-white", "rounded-full", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
+        searchedAnimeItem.classList.add("group", "relative", "bg-white", "rounded-lg", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
 
         const searchedAnimeImage = document.createElement("img");
         searchedAnimeImage.src = animeData.images.jpg.image_url;
         searchedAnimeImage.alt = animeData.title;
-        searchedAnimeImage.classList.add("w-full", "h-auto", "rounded-t-full");
+        searchedAnimeImage.classList.add("w-full", "h-auto", "rounded-t-lg");
 
         const searchedAnimeInfo = document.createElement("div");
         searchedAnimeInfo.classList.add("p-4");
@@ -136,12 +141,12 @@
 
         similarAnimeData.forEach(anime => {
           const animeItem = document.createElement("div");
-          animeItem.classList.add("group", "relative", "bg-white", "rounded-full", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
+          animeItem.classList.add("group", "relative", "bg-white", "rounded-lg", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
 
           const animeImage = document.createElement("img");
           animeImage.src = anime.entry.images.jpg.image_url;
           animeImage.alt = anime.entry.title;
-          animeImage.classList.add("w-full", "h-auto", "rounded-t-full");
+          animeImage.classList.add("w-full", "h-auto", "rounded-t-lg");
 
           const animeInfo = document.createElement("div");
           animeInfo.classList.add("p-4");
@@ -177,12 +182,12 @@
 
         watchlist.forEach(anime => {
           const watchlistItem = document.createElement("div");
-          watchlistItem.classList.add("relative", "bg-white", "rounded-full", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
+          watchlistItem.classList.add("relative", "bg-white", "rounded-lg", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
 
           const watchlistImage = document.createElement("img");
           watchlistImage.src = anime.images.jpg.image_url;
           watchlistImage.alt = anime.title;
-          watchlistImage.classList.add("w-full", "h-auto", "rounded-t-full");
+          watchlistImage.classList.add("w-full", "h-auto", "rounded-t-lg");
 
           const watchlistInfo = document.createElement("div");
           watchlistInfo.classList.add("p-4");
