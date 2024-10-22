@@ -70,6 +70,17 @@
       const jikanApiUrl = "https://api.jikan.moe/v4";
       let watchlist = [];
 
+      const recommendationForm = document.getElementById("recommendationForm");
+      recommendationForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const animeTitle = document.getElementById("animeInput").value;
+        const animeData = await fetchAnimeDetails(animeTitle);
+        if (animeData) {
+          const similarAnimeData = await fetchSimilarAnime(animeData.mal_id);
+          displayRecommendations(animeData, similarAnimeData);
+        }
+      });
+
       async function fetchAnimeDetails(animeTitle) {
         try {
           const response = await axios.get(`${jikanApiUrl}/anime?q=${animeTitle}&limit=1`);
@@ -196,18 +207,4 @@
           watchlistItem.appendChild(removeFromWatchlistButton);
 
           watchlistList.appendChild(watchlistItem);
-        });
-      }
-
-      function removeFromWatchlist(animeId) {
-        watchlist = watchlist.filter(anime => anime.mal_id !== animeId);
-        displayWatchlist();
-      }
-
-      const recommendationForm = document.getElementById("recommendationForm");
-      recommendationForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const animeTitle = document.getElementById("animeInput").value;
-        const animeData = await fetchAnimeDetails(animeTitle);
-        if (animeData) {
-          const similarAnimeData = await fetchSimilarAnime(animeData.mal_id);
+        }
