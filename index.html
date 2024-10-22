@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommender</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@1.16.2/dist/full.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+</head>
+<body>
+    <header class="bg-gray-900 text-white py-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold">Anime Recommender</a>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a href="#home" class="hover:text-gray-300">Home</a></li>
+                    <li><a href="#recommendations" class="hover:text-gray-300">Recommendations</a></li>
+                    <li><a href="#watchlist" class="hover:text-gray-300">Watchlist</a></li>
+                    <li><a href="#about" class="hover:text-gray-300">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-20">
+            <div class="container mx-auto text-center">
+                <h1 class="text-4xl font-bold mb-4">Discover Your Next Favorite Anime</h1>
+                <p class="text-xl mb-8">Get personalized anime recommendations based on your preferences.</p>
+                <form id="recommendationForm" class="flex justify-center">
+                    <input type="text" id="animeInput" class="bg-white rounded-l-full px-6 py-3 text-gray-800 font-bold" placeholder="Enter an anime title" required>
+                    <button type="submit" class="bg-pink-500 hover:bg-pink-600 rounded-r-full px-6 py-3 text-white font-bold">Get Recommendations</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="recommendations" class="py-20">
+            <div class="container mx-auto">
+                <h2 class="text-3xl font-bold mb-8 text-center">Recommended Anime</h2>
+                <div id="recommendationsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+            </div>
+        </section>
+
+        <section id="watchlist" class="py-20">
+            <div class="container mx-auto">
+                <h2 class="text-3xl font-bold mb-8 text-center">Your Watchlist</h2>
+                <div id="watchlistList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+            </div>
+        </section>
+
+        <section id="about" class="bg-gray-100 py-20">
+            <div class="container mx-auto text-center">
+                <h2 class="text-3xl font-bold mb-8">About Anime Recommender</h2>
+                <p class="text-gray-600 mb-8">We are passionate about helping anime fans discover new and exciting anime series based on their preferences. Our advanced recommendation engine analyzes your input and suggests similar anime that you might enjoy.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2023 Anime Recommender. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+      const jikanApiUrl = "https://api.jikan.moe/v4";
+      let watchlist = [];
+
+      async function fetchAnimeDetails(animeTitle) {
+        try {
+          const response = await axios.get(`${jikanApiUrl}/anime?q=${animeTitle}&limit=1`);
+          const animeData = response.data.data[0];
+          return animeData;
+        } catch (error) {
+          console.error("Error fetching anime details:", error);
+          return null;
+        }
+      }
+
+      async function fetchSimilarAnime(animeId) {
+        try {
+          const response = await axios.get(`${jikanApiUrl}/anime/${animeId}/recommendations`);
+          const similarAnimeData = response.data.data.slice(0, 4);
+          return similarAnimeData;
+        } catch (error) {
+          console.error("Error fetching similar anime:", error);
+          return [];
+        }
+      }
+
+      function displayRecommendations(animeData, similarAnimeData) {
+        const recommendationsList = document.getElementById("recommendationsList");
+        recommendationsList.innerHTML = "";
+
+        const searchedAnimeItem = document.createElement("div");
+        searchedAnimeItem.classList.add("group", "relative", "bg-white", "rounded-full", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
+
+        const searchedAnimeImage = document.createElement("img");
+        searchedAnimeImage.src = animeData.images.jpg.image_url;
+        searchedAnimeImage.alt = animeData.title;
+        searchedAnimeImage.classList.add("w-full", "h-auto", "rounded-t-full");
+
+        const searchedAnimeInfo = document.createElement("div");
+        searchedAnimeInfo.classList.add("p-4");
+
+        const searchedAnimeTitle = document.createElement("h3");
+        searchedAnimeTitle.classList.add("text-xl", "font-bold", "mb-2", "text-black");
+        searchedAnimeTitle.textContent = animeData.title;
+
+        const searchedAnimeSynopsis = document.createElement("p");
+        searchedAnimeSynopsis.classList.add("text-gray-600", "text-sm");
+        searchedAnimeSynopsis.textContent = animeData.synopsis;
+
+        const addToWatchlistButton = document.createElement("button");
+        addToWatchlistButton.classList.add("material-icons", "text-2xl", "absolute", "top-2", "right-2", "invisible", "group-hover:visible", "transition", "duration-300");
+        addToWatchlistButton.textContent = "add";
+        addToWatchlistButton.addEventListener("click", () => addToWatchlist(animeData));
+
+        searchedAnimeItem.appendChild(searchedAnimeImage);
+        searchedAnimeInfo.appendChild(searchedAnimeTitle);
+        searchedAnimeInfo.appendChild(searchedAnimeSynopsis);
+        searchedAnimeItem.appendChild(searchedAnimeInfo);
+        searchedAnimeItem.appendChild(addToWatchlistButton);
+
+        recommendationsList.appendChild(searchedAnimeItem);
+
+        similarAnimeData.forEach(anime => {
+          const animeItem = document.createElement("div");
+          animeItem.classList.add("group", "relative", "bg-white", "rounded-full", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
+
+          const animeImage = document.createElement("img");
+          animeImage.src = anime.entry.images.jpg.image_url;
+          animeImage.alt = anime.entry.title;
+          animeImage.classList.add("w-full", "h-auto", "rounded-t-full");
+
+          const animeInfo = document.createElement("div");
+          animeInfo.classList.add("p-4");
+
+          const animeTitle = document.createElement("h3");
+          animeTitle.classList.add("text-xl", "font-bold", "mb-2", "text-black");
+          animeTitle.textContent = anime.entry.title;
+
+          const addToWatchlistButton = document.createElement("button");
+          addToWatchlistButton.classList.add("material-icons", "text-2xl", "absolute", "top-2", "right-2", "invisible", "group-hover:visible", "transition", "duration-300");
+          addToWatchlistButton.textContent = "add";
+          addToWatchlistButton.addEventListener("click", () => addToWatchlist(anime.entry));
+
+          animeItem.appendChild(animeImage);
+          animeInfo.appendChild(animeTitle);
+          animeItem.appendChild(animeInfo);
+          animeItem.appendChild(addToWatchlistButton);
+
+          recommendationsList.appendChild(animeItem);
+        });
+      }
+
+      function addToWatchlist(anime) {
+        if (!watchlist.some(item => item.mal_id === anime.mal_id)) {
+          watchlist.push(anime);
+          displayWatchlist();
+        }
+      }
+
+      function displayWatchlist() {
+        const watchlistList = document.getElementById("watchlistList");
+        watchlistList.innerHTML = "";
+
+        watchlist.forEach(anime => {
+          const watchlistItem = document.createElement("div");
+          watchlistItem.classList.add("relative", "bg-white", "rounded-full", "shadow-lg", "overflow-hidden", "transform", "hover:scale-105", "transition", "duration-300");
+
+          const watchlistImage = document.createElement("img");
+          watchlistImage.src = anime.images.jpg.image_url;
+          watchlistImage.alt = anime.title;
+          watchlistImage.classList.add("w-full", "h-auto", "rounded-t-full");
+
+          const watchlistInfo = document.createElement("div");
+          watchlistInfo.classList.add("p-4");
+
+          const watchlistTitle = document.createElement("h3");
+          watchlistTitle.classList.add("text-xl", "font-bold", "mb-2", "text-black");
+          watchlistTitle.textContent = anime.title;
+
+          const removeFromWatchlistButton = document.createElement("button");
+          removeFromWatchlistButton.classList.add("material-icons", "text-2xl", "absolute", "top-2", "right-2", "transition", "duration-300");
+          removeFromWatchlistButton.textContent = "remove";
+          removeFromWatchlistButton.addEventListener("click", () => removeFromWatchlist(anime.mal_id));
+
+          watchlistItem.appendChild(watchlistImage);
+          watchlistInfo.appendChild(watchlistTitle);
+          watchlistItem.appendChild(watchlistInfo);
+          watchlistItem.appendChild(removeFromWatchlistButton);
+
+          watchlistList.appendChild(watchlistItem);
+        });
+      }
+
+      function removeFromWatchlist(animeId) {
+        watchlist = watchlist.filter(anime => anime.mal_id !== animeId);
+        displayWatchlist();
+      }
+
+      const recommendationForm = document.getElementById("recommendationForm");
+      recommendationForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const animeTitle = document.getElementById("animeInput").value;
+        const animeData = await fetchAnimeDetails(animeTitle);
+        if (animeData) {
+          const similarAnimeData = await fetchSimilarAnime(animeData.mal_id);
